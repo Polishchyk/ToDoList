@@ -15,6 +15,16 @@ return new class extends Migration
     {
         Schema::create('tasks', function (Blueprint $table) {
             $table->id();
+            $table->string('title');
+            $table->text('description')->nullable();
+            $table->boolean('status')->default(0);
+            $table->timestamp('completed_at')->nullable();
+            $table->enum('priority', [1,2,3,4,5]);
+            $table->integer('parent_id')->nullable();
+            $table->foreignId('user_id')
+                ->constrained()
+                ->cascadeOnUpdate()
+                ->cascadeOnDelete();
             $table->timestamps();
         });
     }
