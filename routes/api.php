@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\AuthenticationController;
+use App\Http\Controllers\ClientController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\ProjectController;
@@ -22,6 +23,12 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
     Route::get('/projects', [ProjectController::class, 'index']);
     Route::get('/projects/{id}', [ProjectController::class, 'show']);
     Route::post('/projects/store', [ProjectController::class, 'store']);
-    Route::post('/projects/{id}/update', [ProjectController::class, 'update']);
+    Route::put('/projects/{id}/update', [ProjectController::class, 'update']);
     Route::delete('/projects/{id}/delete', [ProjectController::class, 'destroy']);
+
+    Route::get('/clients', [ClientController::class, 'index']);
+    Route::get('/clients/{id}', [ClientController::class, 'show']);
+    Route::post('/clients/store', [ClientController::class, 'store']);
+    Route::put('/clients/{id}/update', [ClientController::class, 'update']);
+    Route::delete('/clients/{id}/delete', [ClientController::class, 'destroy']);
 });

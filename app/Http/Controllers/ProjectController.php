@@ -38,15 +38,6 @@ class ProjectController extends Controller
         return new ProjectResource(Project::findOrFail($id));
     }
 
-
-
-    /**
-     * Update the specified resource in storage.
-     *
-     * @param  \App\Http\Requests\UpdateProjectRequest  $request
-     * @param  \App\Models\Project  $project
-     * @return \Illuminate\Http\Response
-     */
     public function update(UpdateProjectRequest $request, $id)
     {
         $attr = $request->validated();
