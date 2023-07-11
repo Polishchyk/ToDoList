@@ -2,19 +2,31 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Resources\TaskCollection;
+use App\Models\Project;
 use App\Models\Task;
 use Illuminate\Http\Request;
 
 class TaskController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
+
     public function index()
     {
-        //
+        return new TaskCollection(Task::paginate());
+    }
+
+    public function getTasksByProject($id)
+    {
+        $project = Project::findOrFail($id);
+
+        return new TaskCollection($project->tasks()->paginate(15));
+    }
+
+    public function getMyTasks()
+    {
+        $user = auth()->user();
+
+        return new TaskCollection($user->tasks()->paginate(15));
     }
 
     /**
