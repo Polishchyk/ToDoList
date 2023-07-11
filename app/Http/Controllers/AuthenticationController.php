@@ -31,4 +31,13 @@ class AuthenticationController extends Controller
             'token' => auth()->user()->createToken('token')->plainTextToken
         ];
     }
+
+    public function logout()
+    {
+        auth()->user()->tokens()->delete();
+
+        return [
+            'message' => 'Tokens Revoked'
+        ];
+    }
 }
