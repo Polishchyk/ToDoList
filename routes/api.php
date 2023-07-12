@@ -3,6 +3,7 @@
 use App\Http\Controllers\AuthenticationController;
 use App\Http\Controllers\ClientController;
 use App\Http\Controllers\TaskController;
+use App\Http\Controllers\TaskStatusController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\CommentController;
 use Illuminate\Support\Facades\Route;
@@ -42,6 +43,11 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
     Route::get('/profile/tasks', [TaskController::class, 'getMyTasks']);
     Route::put('/tasks/{id}/update', [TaskController::class, 'update']);
     Route::delete('/tasks/{id}/delete', [TaskController::class, 'destroy']);
+
+    Route::get('/task-statuses', [TaskStatusController::class, 'index']);
+    Route::post('/task-statuses/store', [TaskStatusController::class, 'store']);
+    Route::put('/task-statuses/{id}/update', [TaskStatusController::class, 'update']);
+    Route::delete('/task-statuses/{id}/delete', [TaskStatusController::class, 'destroy']);
 
     Route::post('/comments', [CommentController::class, 'store']);
     Route::get('task/{id}/comments', [CommentController::class, 'showByTaskId']);
