@@ -19,7 +19,12 @@ return new class extends Migration
             $table->text('description')->nullable();
             $table->timestamp('completed_at')->nullable();
             $table->enum('priority', [1,2,3,4,5]);
-            $table->integer('parent_id')->nullable();
+            //$table->integer('parent_id')->unsigned()->nullable();
+            $table->foreignId('parent_id')->nullable()
+                ->constrained()
+                ->references('id')
+                ->on('tasks')
+                ->cascadeOnDelete();
             $table->foreignId('user_id')
                 ->constrained()
                 ->cascadeOnUpdate()

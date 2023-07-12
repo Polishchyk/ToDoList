@@ -15,13 +15,13 @@ class TaskController extends Controller
 
     public function index()
     {
-        return new TaskCollection(Task::where("parent_id", "=", 0)->paginate());
+        return new TaskCollection(Task::where("parent_id", "=", null)->paginate());
     }
 
     public function getTasksByProject($id)
     {
         $project = Project::with(['tasks'=> function($q){
-            $q->where('parent_id', '=', 0);
+            $q->where('parent_id', '=', null);
         }])->where('id', '=', $id)->paginate(15);
 
         return new TaskCollection($project);
@@ -32,7 +32,7 @@ class TaskController extends Controller
         $user = auth()->user();
 
         $userTasks = User::with(['tasks'=> function($q){
-            $q->where('parent_id', '=', 0);
+            $q->where('parent_id', '=', null);
         }])->where('id', '=', $user->id)->paginate(15);
 
         return new TaskCollection($userTasks);
@@ -46,7 +46,7 @@ class TaskController extends Controller
         $task->title = $attr['title'];
         $task->description = $attr['description'];
         $task->priority = isset($attr['priority']) ? $attr['priority'] : 1;
-        $task->parent_id = isset($attr['parent_id']) ? $attr['parent_id'] : 0;
+        $task->parent_id = isset($attr['parent_id']) ? $attr['parent_id'] : null;
         $task->user_id = $request->user()->id;
         $task->project_id = $attr['project_id'];
         $task->task_status_id = $attr['task_status_id'];
@@ -64,37 +64,36 @@ class TaskController extends Controller
         return new TaskCollection($tasks);
     }
 
-    /**
-     * Show the form for editing the specified resource.
-     *
-     * @param  \App\Models\Task  $task
-     * @return \Illuminate\Http\Response
-     */
-    public function edit(Task $task)
+    public function update(TaskUpdateRequest $request, $id)
     {
-        //
+        $attr = $request->validated();
+
+        $task = Task::findOrFail($id);
+
+        $task->title = $attr['title'];
+        $task->description = $attr['description'];
+        $task->status = isset($attr['status']) ? $attr['status'] : 0;
+        $task->client_id = $attr['client_id'];
+        $task->user_id = $request->user()->id;
+        $task->save();
+
+        return new TaskResource($task);
     }
 
-    /**
-     * Update the specified resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  \App\Models\Task  $task
-     * @return \Illuminate\Http\Response
-     */
-    public function update(Request $request, Task $task)
-    {
-        //
-    }
 
-    /**
-     * Remove the specified resource from storage.
-     *
-     * @param  \App\Models\Task  $task
-     * @return \Illuminate\Http\Response
-     */
-    public function destroy(Task $task)
+    public function destroy($id)
     {
-        //
+        $task = Task::findOrFail($id);
+
+        if($task->delete()){
+
+            return response()->json([
+                'message' => 'The task was successfully deleted',
+            ], 200);
+        }
+
+        return response()->json([
+            'message' => 'A deletion error occurred',
+        ], 200);
     }
 }
