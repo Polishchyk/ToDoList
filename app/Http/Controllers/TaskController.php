@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\StoreTaskRequest;
+use App\Http\Requests\UpdateTaskRequest;
 use App\Http\Resources\TaskCollection;
 use App\Http\Resources\TaskResource;
 use App\Models\Project;
@@ -64,7 +65,7 @@ class TaskController extends Controller
         return new TaskCollection($tasks);
     }
 
-    public function update(TaskUpdateRequest $request, $id)
+    public function update(UpdateTaskRequest $request, $id)
     {
         $attr = $request->validated();
 
@@ -72,9 +73,11 @@ class TaskController extends Controller
 
         $task->title = $attr['title'];
         $task->description = $attr['description'];
-        $task->status = isset($attr['status']) ? $attr['status'] : 0;
-        $task->client_id = $attr['client_id'];
+        $task->priority = isset($attr['priority']) ? $attr['priority'] : 1;
+        $task->parent_id = isset($attr['parent_id']) ? $attr['parent_id'] : null;
         $task->user_id = $request->user()->id;
+        $task->project_id = $attr['project_id'];
+        $task->task_status_id = $attr['task_status_id'];
         $task->save();
 
         return new TaskResource($task);
