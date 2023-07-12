@@ -16,7 +16,11 @@ class Task extends Model
 
     public function childrenTasks()
     {
-
         return $this->hasMany(Task::class, 'parent_id')->with('childrenTasks');
+    }
+
+    public function comments()
+    {
+        return $this->hasMany(Comment::class)->whereNull('parent_id');
     }
 }

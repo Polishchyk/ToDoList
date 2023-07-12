@@ -2,85 +2,88 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Resources\CommentCollection;
+use App\Http\Resources\CommentResource;
 use App\Models\Comment;
 use App\Http\Requests\StoreCommentRequest;
 use App\Http\Requests\UpdateCommentRequest;
+use App\Models\Task;
 
 class CommentController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
     public function index()
     {
-        //
+        return new CommentCollection(Comment::where("parent_id", "=", null)->paginate());
     }
 
-    /**
-     * Show the form for creating a new resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function create()
-    {
-        //
-    }
-
-    /**
-     * Store a newly created resource in storage.
-     *
-     * @param  \App\Http\Requests\StoreCommentRequest  $request
-     * @return \Illuminate\Http\Response
-     */
     public function store(StoreCommentRequest $request)
     {
-        //
+
+        $request->validate([
+            'body'=>'required',
+        ]);
+
+        $attr = $request->validated();
+
+        $comment = new Comment();
+        $comment->body = $attr['body'];
+        $comment->parent_id = isset($attr['parent_id']) ? $attr['parent_id'] : null;
+        $comment->user_id = $request->user()->id;
+        $comment->task_id = $attr['task_id'];
+        $comment->save();
+
+        return new CommentResource($comment);
     }
 
-    /**
-     * Display the specified resource.
-     *
-     * @param  \App\Models\Comment  $comment
-     * @return \Illuminate\Http\Response
-     */
-    public function show(Comment $comment)
+    public function showByTaskId($taskId)
     {
-        //
+        $task = Task::with(['comments'=> function($q){
+            $q->where('parent_id', '=', null);
+        }])->where('id', '=', $taskId)->paginate(15);
+
+        return new CommentCollection($task);
     }
 
-    /**
-     * Show the form for editing the specified resource.
-     *
-     * @param  \App\Models\Comment  $comment
-     * @return \Illuminate\Http\Response
-     */
-    public function edit(Comment $comment)
+    public function show($id)
     {
-        //
+        $comment = Comment::where('id', "=", $id)
+            ->with(['replies'])
+            ->paginate(15);
+
+        return new CommentCollection($comment);
     }
 
-    /**
-     * Update the specified resource in storage.
-     *
-     * @param  \App\Http\Requests\UpdateCommentRequest  $request
-     * @param  \App\Models\Comment  $comment
-     * @return \Illuminate\Http\Response
-     */
-    public function update(UpdateCommentRequest $request, Comment $comment)
+    public function update(UpdateCommentRequest $request, $id)
     {
-        //
+        $request->validate([
+            'body'=>'required',
+        ]);
+
+        $attr = $request->validated();
+
+        $comment = Comment::findOrFail($id);
+        $comment->body = $attr['body'];
+        $comment->parent_id = isset($attr['parent_id']) ? $attr['parent_id'] : null;
+        $comment->user_id = $request->user()->id;
+        $comment->task_id = $attr['task_id'];
+        $comment->save();
+
+        return new CommentResource($comment);
     }
 
-    /**
-     * Remove the specified resource from storage.
-     *
-     * @param  \App\Models\Comment  $comment
-     * @return \Illuminate\Http\Response
-     */
-    public function destroy(Comment $comment)
+    public function destroy($id)
     {
-        //
+        $comment = Comment::findOrFail($id);
+
+        if($comment->delete()){
+
+            return response()->json([
+                'message' => 'The comment was successfully deleted',
+            ], 200);
+        }
+
+        return response()->json([
+            'message' => 'A deletion error occurred',
+        ], 200);
     }
 }
