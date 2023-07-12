@@ -4,9 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\UpdateUserRequest;
 use App\Http\Requests\UserUpdateRequest;
-use App\Http\Resources\ProjectResource;
 use App\Http\Resources\UserResource;
-use App\Models\Project;
 use App\Models\User;
 use Illuminate\Http\Request;
 

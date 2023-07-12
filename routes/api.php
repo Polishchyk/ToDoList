@@ -36,6 +36,8 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
     Route::delete('/clients/{id}/delete', [ClientController::class, 'destroy']);
 
     Route::get('/tasks', [TaskController::class, 'index']);
+    Route::get('/tasks/{id}', [TaskController::class, 'show']);
+    Route::post('/tasks/store', [TaskController::class, 'store']);
     Route::get('/projects/{id}/tasks', [TaskController::class, 'getTasksByProject']);
     Route::get('/profile/tasks', [TaskController::class, 'getMyTasks']);
 
