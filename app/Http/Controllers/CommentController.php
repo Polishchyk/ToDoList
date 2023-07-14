@@ -19,10 +19,6 @@ class CommentController extends Controller
     public function store(StoreCommentRequest $request)
     {
 
-        $request->validate([
-            'body'=>'required',
-        ]);
-
         $attr = $request->validated();
 
         $comment = new Comment();
@@ -55,10 +51,6 @@ class CommentController extends Controller
 
     public function update(UpdateCommentRequest $request, $id)
     {
-        $request->validate([
-            'body'=>'required',
-        ]);
-
         $attr = $request->validated();
 
         $comment = Comment::findOrFail($id);
