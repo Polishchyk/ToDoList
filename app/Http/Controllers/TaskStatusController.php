@@ -30,8 +30,9 @@ class TaskStatusController extends Controller
 
     public function update(UpdateTaskStatusRequest $request, $id)
     {
-        $taskStatus = TaskStatus::findOrFail($id);
+        $attr = $request->validated();
 
+        $taskStatus = TaskStatus::findOrFail($id);
         $taskStatus->title = $attr['title'];
         $taskStatus->position = isset($attr['position']) ? $attr['position'] : ((int)TaskStatus::max('position') + 1);
         $taskStatus->save();
